@@ -42,24 +42,36 @@ namespace monitor_web_status_code
                     //网站状态码
                     if (parameters[0] == "web.code" && parameters[1] != null)
                     {
-                        try
+                        if(parameters[2]==null)
                         {
-                            if (parameters[1].StartsWith("http://") == false)
+                            try
                             {
-                                parameters[1] = "http://" + parameters[1];
+
+                                web_site_code wsc = new web_site_code();
+                                int code = wsc.Get_code(parameters[1]);
+                                Console.Write(code);
                             }
+                            catch
+                            {
 
-
-                            web_site_code wsc = new web_site_code();
-                            int code = wsc.Get_code(parameters[1]);
-                            Console.Write(code);
+                                Console.WriteLine("Parameters error!");
+                                Console.WriteLine("URL typing errors");
+                            }  
                         }
-                        catch
+                        else
                         {
+                            try
+                            {
 
-                            Console.WriteLine("Parameters error!");
-                            Console.WriteLine("URL typing errors");
-                        }  
+                                web_site_code wsc = new web_site_code();
+                                int code = wsc.Get_code(parameters[1],parameters[2]);
+                                Console.Write(code);
+                            }
+                            catch
+                            {
+                                Console.Write("404");
+                            }  
+                        }
                     }
                 }
             }
