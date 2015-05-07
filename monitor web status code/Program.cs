@@ -92,7 +92,7 @@ namespace monitor_web_status_code
                             catch //(Exception ex)
                             {
                                 //Console.WriteLine(ex);
-                                Console.WriteLine("404");
+                                Console.WriteLine("404444444");
                             }
                         }
                     } 
@@ -105,6 +105,7 @@ namespace monitor_web_status_code
                 Console.WriteLine("\t\t mwsc  web.code | web_site_discovery");
                 Console.WriteLine("\t\t web.code  \"web.code www.baidu.com\"");
                 Console.WriteLine("\t\t web.dis");
+                Console.WriteLine("\t\t Return code ");
             }
 
 

@@ -27,7 +27,7 @@ namespace monitor_web_status_code
                     
                 }
                 HttpWebRequest hwr = (HttpWebRequest)WebRequest.Create(test_ip);
-
+                
                 hwr.KeepAlive = false;
                 
                 hwr.Host = url;
@@ -36,30 +36,54 @@ namespace monitor_web_status_code
 
                 hwr.Timeout = 2000; //1秒超时
 
-                HttpWebResponse hwrs = (HttpWebResponse)hwr.GetResponse();
-
-                switch (hwrs.StatusCode)
+                try
                 {
-                    
-                    case HttpStatusCode.InternalServerError:
-                        return 500;
-
-                    case HttpStatusCode.Moved:
-                        return 301;
-
-                    case HttpStatusCode.OK:
-                        return 200;
-                       
-                    case HttpStatusCode.RequestTimeout:
-                        return 408;
-                        
-                    case HttpStatusCode.ServiceUnavailable:
-                        return 503;
-                        
-                    default:
-                        return 0000;
-                        
+                    //网页正常访问
+                    HttpWebResponse hwrs = (HttpWebResponse)hwr.GetResponse();
+                   
+                    return 200;
                 }
+                catch (WebException ex)
+                {
+                   // Console.WriteLine(ex.Status);
+                    switch (ex.Status)
+                    {
+                        case WebExceptionStatus.Success:
+                            return 200;
+                            
+                        case WebExceptionStatus.Timeout:
+                            return 408;
+                        case WebExceptionStatus.ProtocolError:
+                            return 404;
+                        default:
+                            return 1000;
+                    }
+
+
+                    if(ex.Status==WebExceptionStatus.ProtocolError)
+                    {
+                        HttpWebResponse errors = (HttpWebResponse)ex.Response;
+                        switch (errors.StatusCode)
+                        {
+                           
+                            case HttpStatusCode.InternalServerError:
+                                return 500;
+                              
+                            case HttpStatusCode.NotFound:
+                                return 404;
+                              
+                            case HttpStatusCode.OK:
+                                return 200;
+
+                            case HttpStatusCode.RequestTimeout:
+                                return 408;
+                            default:
+                                return 2000;
+                        }
+                    }
+                    
+                }
+                
         }
     }
 }
