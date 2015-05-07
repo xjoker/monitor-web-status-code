@@ -56,7 +56,7 @@ namespace monitor_web_status_code
                         case WebExceptionStatus.ProtocolError:
                             return 404;
                         default:
-                            return 1000;
+                            return 1;
                     }
 
 
@@ -78,7 +78,7 @@ namespace monitor_web_status_code
                             case HttpStatusCode.RequestTimeout:
                                 return 408;
                             default:
-                                return 2000;
+                                return 1;
                         }
                     }
                     
