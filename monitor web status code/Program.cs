@@ -10,17 +10,19 @@ namespace monitor_web_status_code
             try
             {
 
+                //string[] parameters = new string[3];
 
-                string[] parameters = new string[3];
+                  
+
                 if (args.Length != 0)
                 {
-                    parameters = args;
-
+                    var parameters = args;
+                    
                     if (parameters.Length != 0)
                     {
                         #region web.dis功能
                         //参数为“web_site_discovery”时
-                        if (parameters[0] == "web.dis")
+                        if (parameters[0] == "website.discovery")
                         {
                             read_url_text rut = new read_url_text();
                             string[] aaa = rut.get_url_in_file();
@@ -45,15 +47,15 @@ namespace monitor_web_status_code
                         }
                         #endregion
 
-
                         #region 网站状态码
-
+                        
                         int code;
-                        if (parameters[0] == "web.code" && parameters[1] != null)
+                        if (parameters[0] == "website.code" && parameters[1] != null)
                         {
 
-                            if (parameters.Length > 2)
+                            if (parameters.Length>2)
                             {
+                                
                                 try
                                 {
                                     web_site_code wsc = new web_site_code();
@@ -67,7 +69,7 @@ namespace monitor_web_status_code
                             }
                             else
                             {
-
+                               
                                 try
                                 {
 
@@ -76,11 +78,14 @@ namespace monitor_web_status_code
                                     if (parameters[1].Substring(0, 1) == "$")
                                     {
                                         //遇到带 "$" 的处理方法
+                                        //Console.WriteLine("Test info: " + parameters[1].ToString());
+
                                         code = wsc.Get_code(parameters[1].Substring(1, parameters[1].Length - 1));
                                     }
                                     else
                                     {
                                         //一般模式检测IP地址127.0.0.1
+                                        Console.WriteLine("Test info: " + parameters[1].ToString() + "/zabbix/zabbix.aspx");
                                         code = wsc.Get_code(parameters[1].ToString() + "/zabbix/zabbix.aspx", "127.0.0.1");
                                     }
 
@@ -100,14 +105,15 @@ namespace monitor_web_status_code
                 else
                 {
                     Console.WriteLine("\t\t Parameters must input!");
-                    Console.WriteLine("\t\t mwsc  web.code | web.dis");
-                    Console.WriteLine("\t\t web.code  \"web.code www.baidu.com\"");
-                    Console.WriteLine("\t\t web.dis");
+                    Console.WriteLine("\t\t mwsc  website.code | website.discovery");
+                    Console.WriteLine("\t\t website.code  \"website.code www.baidu.com\"");
+                    Console.WriteLine("\t\t website.discovery");
                     Console.WriteLine("\t\t Return code list: 404 200 500 408");
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 Console.WriteLine("Parameters error!");
             }
 
