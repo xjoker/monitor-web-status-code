@@ -15,13 +15,14 @@ namespace monitor_web_status_code
             {
                 url = "http://" + url;
             }
+            //Console.WriteLine(url);
             Uri u = new Uri(url);
             url = u.Host;
             //判断是否传入了IP
             if (ip != "NOIP")
             {
                 //使用IP直接访问站点
-                test_ip = "http://" + ip;
+                test_ip = "http://" + ip+u.AbsolutePath;
 
             }
             else
@@ -57,6 +58,10 @@ namespace monitor_web_status_code
 
                     case WebExceptionStatus.Timeout:
                         return 408;
+
+                    case WebExceptionStatus.ConnectFailure:
+                        return 404;
+
                     case WebExceptionStatus.ProtocolError:
                         HttpWebResponse errors = (HttpWebResponse)ex.Response;
                         switch (errors.StatusCode)
@@ -80,6 +85,7 @@ namespace monitor_web_status_code
                                 return 1;
                         }
                     default:
+                        //Console.WriteLine(ex.Status);
                         return 1;
                 }
 

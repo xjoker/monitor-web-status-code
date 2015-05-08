@@ -113,7 +113,7 @@ namespace monitor_web_status_code
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                //Console.WriteLine(ex);
                 Console.WriteLine("Parameters error!");
             }
 
