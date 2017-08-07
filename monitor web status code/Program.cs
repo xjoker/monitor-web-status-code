@@ -1,5 +1,6 @@
 ﻿using System;
-
+using System.DirectoryServices;
+using System.IO;
 
 namespace monitor_web_status_code
 {
@@ -9,10 +10,8 @@ namespace monitor_web_status_code
         {
             try
             {
+                var urlSavePath = Path.Combine(Environment.CurrentDirectory, "url.txt");
 
-                //string[] parameters = new string[3];
-
-                  
 
                 if (args.Length != 0)
                 {
@@ -25,7 +24,7 @@ namespace monitor_web_status_code
                         if (parameters[0] == "website.discovery")
                         {
                             read_url_text rut = new read_url_text();
-                            string[] aaa = rut.get_url_in_file();
+                            string[] aaa = rut.get_url_in_file(urlSavePath);
                             Console.WriteLine("{");
                             Console.WriteLine("\t\"data\":[");
                             int a = 0;
@@ -100,14 +99,42 @@ namespace monitor_web_status_code
                             }
                         }
                         #endregion
+
+                        #region 获得IIS站点并写入文件
+                        if (parameters[0] == "website.get")
+                        {
+                            DirectoryEntry w3svc = new DirectoryEntry("IIS://localhost/w3svc");
+                            if (w3svc.Children != null)
+                            {
+                                if (File.Exists(urlSavePath))
+                                {
+                                    File.Delete(urlSavePath);
+                                }
+                                foreach (DirectoryEntry de in w3svc.Children)
+                                {
+                                    if (de.Properties.Contains("ServerComment"))
+                                    {
+                                        var siteName = de.Properties["ServerComment"][0].ToString();
+                                        if (!string.IsNullOrWhiteSpace(siteName))
+                                        {
+                                            Taxi.FileHelper.FileHelper.WriteFile(urlSavePath, $"{siteName}\r\n", true);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+
+                        #endregion
                     }
                 }
-                else
+                else 
                 {
                     Console.WriteLine("\t\t Parameters must input!");
-                    Console.WriteLine("\t\t mwsc  website.code | website.discovery");
+                    Console.WriteLine("\t\t mwsc  website.code | website.discovery | website.Get");
                     Console.WriteLine("\t\t website.code  \"website.code www.baidu.com\"");
                     Console.WriteLine("\t\t website.discovery");
+                    Console.WriteLine("\t\t website.Get");
                     Console.WriteLine("\t\t Return code list: 404 200 500 408");
                 }
             }
