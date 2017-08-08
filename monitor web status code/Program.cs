@@ -84,7 +84,7 @@ namespace monitor_web_status_code
                                     else
                                     {
                                         //一般模式检测IP地址127.0.0.1
-                                        Console.WriteLine("Test info: " + parameters[1].ToString() + "/zabbix/zabbix.aspx");
+                                        //Console.WriteLine("Test info: " + parameters[1].ToString() + "/zabbix/zabbix.aspx");
                                         code = wsc.Get_code(parameters[1].ToString() + "/zabbix/zabbix.aspx", "127.0.0.1");
                                     }
 
@@ -122,9 +122,9 @@ namespace monitor_web_status_code
                                     }
                                 }
                             }
-
+                            Console.WriteLine(0);
                         }
-
+                        
                         #endregion
                     }
                 }
