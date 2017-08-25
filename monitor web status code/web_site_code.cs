@@ -44,53 +44,22 @@ namespace monitor_web_status_code
             {
                 //网页正常访问
                 HttpWebResponse hwrs = (HttpWebResponse)hwr.GetResponse();
-
-                return 200;
+                return (int)hwrs.StatusCode;
             }
             catch (WebException ex)
             {
                 // Console.WriteLine(ex.Status);
-                switch (ex.Status)
+                var ddd = Convert.ToInt32(ex.Status);
+
+                if (ex.Status == WebExceptionStatus.ProtocolError)
                 {
-                    case WebExceptionStatus.Success:
-                        return 200;
-
-                    case WebExceptionStatus.Timeout:
-                        return 408;
-
-                    case WebExceptionStatus.ConnectFailure:
-                        return 404;
-
-                    case WebExceptionStatus.ProtocolError:
-                        HttpWebResponse errors = (HttpWebResponse)ex.Response;
-                        switch (errors.StatusCode)
-                        {
-                            case HttpStatusCode.Forbidden:
-                                return 403;
-
-                            case HttpStatusCode.InternalServerError:
-                                return 500;
-
-                            case HttpStatusCode.NotFound:
-                                return 404;
-
-                            case HttpStatusCode.OK:
-                                return 200;
-
-                            case HttpStatusCode.RequestTimeout:
-                                return 408;
-                            default:
-                                Console.WriteLine(errors.StatusCode);
-                                return 1;
-                        }
-                    default:
-                        //Console.WriteLine(ex.Status);
-                        return 1;
+                    var response = ex.Response as HttpWebResponse;
+                    if (response != null)
+                    {
+                        return (int)response.StatusCode;
+                    }
                 }
-
-
-
-
+                return 1;
             }
 
         }

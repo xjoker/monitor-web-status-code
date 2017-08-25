@@ -1,6 +1,7 @@
 ﻿using System;
 using System.DirectoryServices;
 using System.IO;
+using System.Xml;
 
 namespace monitor_web_status_code
 {
@@ -10,7 +11,7 @@ namespace monitor_web_status_code
         {
             try
             {
-                var urlSavePath = Path.Combine(Environment.CurrentDirectory, "url.txt");
+                var urlSavePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "url.txt");
 
 
                 if (args.Length != 0)
@@ -74,7 +75,7 @@ namespace monitor_web_status_code
 
                                     web_site_code wsc = new web_site_code();
 
-                                    if (parameters[1].Substring(0, 1) == "$")
+                                    if (parameters[1].Substring(0, 1) == "@")
                                     {
                                         //遇到带 "$" 的处理方法
                                         //Console.WriteLine("Test info: " + parameters[1].ToString());
@@ -103,23 +104,32 @@ namespace monitor_web_status_code
                         #region 获得IIS站点并写入文件
                         if (parameters[0] == "website.get")
                         {
-                            DirectoryEntry w3svc = new DirectoryEntry("IIS://localhost/w3svc");
-                            if (w3svc.Children != null)
+
+                            var appcmdFile=  Environment.GetEnvironmentVariable("windir")+ "\\system32\\inetsrv\\appcmd.exe";
+                            if (File.Exists(appcmdFile))
                             {
                                 if (File.Exists(urlSavePath))
                                 {
                                     File.Delete(urlSavePath);
                                 }
-                                foreach (DirectoryEntry de in w3svc.Children)
+
+                                var aa = ProcessHelper.RunProcess(appcmdFile, "list site /config /xml");
+                                XmlDocument doc = new XmlDocument();
+                                doc.LoadXml(aa);
+
+                                XmlNodeList siteNodeList = doc.SelectNodes("/appcmd/SITE");
+                                if (siteNodeList != null)
                                 {
-                                    if (de.Properties.Contains("ServerComment"))
+                                    foreach (XmlNode siteNode in siteNodeList)
                                     {
-                                        var siteName = de.Properties["ServerComment"][0].ToString();
+                                        XmlNode gradesNode = siteNode.SelectSingleNode("site");
+                                        var siteName = siteNode.Attributes["SITE.NAME"].Value;
                                         if (!string.IsNullOrWhiteSpace(siteName))
                                         {
                                             Taxi.FileHelper.FileHelper.WriteFile(urlSavePath, $"{siteName}\r\n", true);
                                         }
                                     }
+
                                 }
                             }
                             Console.WriteLine(0);
